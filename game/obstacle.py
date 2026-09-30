@@ -8,8 +8,10 @@ class Obstacle:
         self.y = ground_y - height
         self.speed = speed
         self.scored = False
+        self.prev_x = x
 
     def move(self):
+        self.prev_x = self.x
         self.x -= self.speed
 
     def off_screen(self):
@@ -17,3 +19,8 @@ class Obstacle:
 
     def rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
+
+    def swept_rect(self):
+        # Covers everything the obstacle passed through this frame, so a
+        # fast obstacle can't skip over the player between two frames.
+        return pygame.Rect(self.x, self.y, self.prev_x - self.x + self.width, self.height)
