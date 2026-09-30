@@ -63,6 +63,28 @@ def test_difficulty_keys_ignored_while_playing():
     assert engine.score == 3 and engine.difficulty == "Medium"
 
 
+def test_sounds_play_on_jump_score_and_game_over():
+    engine = GameEngine(800, 400)
+    assert set(engine.sounds) == {"jump", "score", "game_over"}
+    engine.spawn_interval = 10**9
+    played = []
+    engine._play = played.append
+
+    engine.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE))
+    engine.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE))  # mid-air: no sound
+    assert played == ["jump"]
+
+    engine.obstacles = [Obstacle(engine.player.x - 30, engine.ground_y, 6)]
+    engine.update()
+    assert played == ["jump", "score"]
+
+    engine.obstacles = [Obstacle(engine.player.x, engine.ground_y - 200, 0)]  # at player's height
+    engine.player.y = engine.ground_y - 240
+    engine.player.vy = 0
+    engine.update()
+    assert played == ["jump", "score", "game_over"]
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

@@ -1,6 +1,7 @@
 import pygame
 from .player import Player
 from .obstacle import Obstacle
+from .sounds import load_sounds
 
 # Game Engine
 
@@ -25,6 +26,7 @@ class GameEngine:
         self.speed_increase_per_frame = 0.003
         self.font = pygame.font.SysFont("Arial", 30)
         self.big_font = pygame.font.SysFont("Arial", 64, bold=True)
+        self.sounds = load_sounds()
         self.reset(pygame.K_2)
 
     def reset(self, difficulty_key):
@@ -46,7 +48,13 @@ class GameEngine:
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
             return
         if event.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
+            if self.player.on_ground:
+                self._play("jump")
             self.player.jump()
+
+    def _play(self, name):
+        if name in self.sounds:
+            self.sounds[name].play()
 
     def handle_input(self):
         # Reserved for continuously-held-key input; this runner only
@@ -72,12 +80,14 @@ class GameEngine:
         for obstacle in self.obstacles:
             if obstacle.swept_rect().colliderect(self.player.rect()):
                 self.game_over = True
+                self._play("game_over")
                 return
 
         for obstacle in self.obstacles:
             if not obstacle.scored and obstacle.x + obstacle.width < self.player.x:
                 obstacle.scored = True
                 self.score += 1
+                self._play("score")
 
         self.obstacles = [o for o in self.obstacles if not o.off_screen()]
 
