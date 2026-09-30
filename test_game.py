@@ -30,6 +30,22 @@ def test_speed_is_capped():
     assert engine.speed == MAX_SPEED
 
 
+def test_game_over_screen_renders_and_esc_quits():
+    engine = GameEngine(800, 400)
+    engine.game_over = True
+    engine.render(pygame.Surface((800, 400)))
+    pygame.event.clear()
+    engine.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_ESCAPE))
+    assert pygame.event.peek(pygame.QUIT)
+
+
+def test_no_jump_after_game_over():
+    engine = GameEngine(800, 400)
+    engine.game_over = True
+    engine.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE))
+    assert engine.player.on_ground
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

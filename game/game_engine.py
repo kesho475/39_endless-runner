@@ -28,10 +28,17 @@ class GameEngine:
         self.distance = 0
         self.score = 0
         self.font = pygame.font.SysFont("Arial", 30)
+        self.big_font = pygame.font.SysFont("Arial", 64, bold=True)
         self.game_over = False
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN and event.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
+        if event.type != pygame.KEYDOWN:
+            return
+        if self.game_over:
+            if event.key in (pygame.K_ESCAPE, pygame.K_q):
+                pygame.event.post(pygame.event.Event(pygame.QUIT))
+            return
+        if event.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
             self.player.jump()
 
     def handle_input(self):
@@ -79,7 +86,19 @@ class GameEngine:
         score_text = self.font.render(f"Score: {self.score}", True, (0, 0, 0))
         screen.blit(score_text, (10, 10))
 
-        if self.game_over and not getattr(self, "_game_over_logged", False):
-            # NOTE: no proper game-over screen yet - see Task 2 in the README.
-            print("Game over! Final score:", self.score)
-            self._game_over_logged = True
+        if self.game_over:
+            self._render_game_over(screen)
+
+    def _render_game_over(self, screen):
+        overlay = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 170))
+        screen.blit(overlay, (0, 0))
+
+        lines = [
+            (self.big_font, "GAME OVER", 110),
+            (self.font, f"Final Score: {self.score}", 190),
+            (self.font, "Press Esc or Q to exit", 260),
+        ]
+        for font, text, y in lines:
+            surface = font.render(text, True, WHITE)
+            screen.blit(surface, surface.get_rect(center=(self.width // 2, y)))
