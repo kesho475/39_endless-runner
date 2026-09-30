@@ -46,6 +46,23 @@ def test_no_jump_after_game_over():
     assert engine.player.on_ground
 
 
+def test_replay_with_chosen_difficulty_resets_state():
+    engine = GameEngine(800, 400)
+    engine.score, engine.speed, engine.game_over = 12, 17, True
+    engine.obstacles = [Obstacle(100, engine.ground_y, 17)]
+    engine.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_3))
+    assert not engine.game_over
+    assert engine.score == 0 and engine.obstacles == []
+    assert (engine.difficulty, engine.speed, engine.spawn_interval) == ("Hard", 8, 55)
+
+
+def test_difficulty_keys_ignored_while_playing():
+    engine = GameEngine(800, 400)
+    engine.score = 3
+    engine.handle_event(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_1))
+    assert engine.score == 3 and engine.difficulty == "Medium"
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
