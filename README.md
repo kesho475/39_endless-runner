@@ -36,7 +36,17 @@ pip install -r requirements.txt
 python main.py
 ```
 
+5. (Optional) Run the tests:
 
+```bash
+python test_game.py
+```
+
+### Controls
+
+- `Space` / `Up` / `W` - jump
+- `1` / `2` / `3` - on the Game Over screen, play again on Easy / Medium / Hard
+- `Esc` / `Q` - quit
 
 
 ## Tasks to Complete
@@ -76,16 +86,28 @@ Each task must be completed using an iterative process involving LLM suggestions
 
 ---
 
+## What I Added
+
+- **Task 1 - Collision fix:** speed is now capped (`MAX_SPEED`) and collision checks the whole distance an obstacle moved in a frame, so obstacles can't skip through the player anymore.
+- **Task 2 - Game Over screen:** on collision the game stops and shows "GAME OVER" with the final score on screen instead of printing to the console.
+- **Task 3 - Replay:** from the Game Over screen press 1, 2 or 3 to restart on Easy, Medium or Hard (different starting speed and spawn rate). Everything resets properly.
+- **Task 4 - Sounds:** jump, score and game over sounds. They are generated in code so no sound files are needed, and the game still runs if there's no audio device.
+- Added `test_game.py` with a few simple checks for the collision fix.
+
+---
+
 ## Folder Structure
 
 ```
 endless-runner-main/
 ├── main.py
 ├── requirements.txt
+├── test_game.py
 ├── game/
 │   ├── game_engine.py
 │   ├── player.py
-│   └── obstacle.py
+│   ├── obstacle.py
+│   └── sounds.py
 └── README.md
 ```
 
